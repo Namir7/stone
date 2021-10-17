@@ -1,19 +1,18 @@
-const fs = require("fs");
-const path = require("path");
+require("dotenv").config();
+const express = require("express");
+const serveIndex = require("serve-index");
+const app = express();
 
-const readableStream = fs.createReadStream("../../DATA/DOCS/pass.txt");
+const port = process.env.PORT;
+const static = process.env.STATIC_PATH
 
-readableStream.on("data", (data) => {
-    const dir = "./files";
+app.use("/data", express.static(static));
+app.use('/data', serveIndex(static));
 
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-    }
+app.get("/", (req, res) => {
+    res.send("Hello world!");
+});
 
-    const writableStream = fs.createWriteStream(path.join(dir, "data.txt"));
-    writableStream.write(data);
-
-    writableStream.on("close", () => {
-        console.log("end of writeable stream");
-    });
+app.listen(port, () => {
+    console.log(`server runnning at port ${port}`);
 });
